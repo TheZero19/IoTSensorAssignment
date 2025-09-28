@@ -26,7 +26,7 @@ func (a ApiKeyAuthMiddleware) Authenticate(next http.Handler) http.Handler {
 			return
 		}
 
-		//We'll be sending APIKEY Prefix, API key, SensorID, PSK of Sensor
+		//We'll be sending APIKEY Prefix, API key, SensorID, PSK of SensorReading
 		//Expecting-> Authorization: API-KEY <API_KEY> <SensorID> <PSK>
 		parts := strings.SplitN(authHeader, Config.AUTH_HEADER_VALUE_SEPARATOR, 4)
 		if len(parts) != 4 || parts[0] != Config.API_KEY_AUTH_REGISTRATION_TYPE_PREFIX || parts[1] != apiKey {

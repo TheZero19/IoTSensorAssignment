@@ -5,14 +5,12 @@ import (
 	"fmt"
 	"net/http"
 
-	_ "github.com/mattn/go-sqlite3"
-
 	AuthConcrete "dependencies/Auth/Concrete"
 
 	_ "golang.org/x/crypto/bcrypt"
 
 	Register "dependencies/Controllers/Register"
-	Sensor "dependencies/Controllers/Sensor"
+	Sensor "dependencies/Controllers/SensorReading"
 	Database "dependencies/Database"
 )
 

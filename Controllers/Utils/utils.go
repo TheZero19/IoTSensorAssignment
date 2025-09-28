@@ -1,20 +1,27 @@
 ﻿package Utils
 
 import (
-	"io"
+	Config "dependencies/Constants"
+	"fmt"
 	"net/http"
 )
 
-func CheckPOSTRequestValidity(w http.ResponseWriter, r *http.Request) (bool, []byte) {
+func CheckPOSTRequestValidity(w http.ResponseWriter, r *http.Request) bool {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return false, nil
+		return false
 	}
+	return true
+}
 
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, "Failed to read body", http.StatusBadRequest)
-		return false, nil
+func SetSensorAsDirty(sensorID string) {
+	added, dirtyAddErr := Config.RedisDb.SAdd(Config.Ctx, Config.DIRTY_SENSORS_KEY, sensorID).Result()
+	if added == 0 {
+		fmt.Println("SensorReading already tracked for future sync with Postgres")
+	} else {
+		fmt.Println("SensorReading added for future sync with Postgres, Added Field Count:", added)
 	}
-	return true, body
+	if dirtyAddErr != nil {
+		fmt.Println("Redis SAdd Error: ", dirtyAddErr)
+	}
 }

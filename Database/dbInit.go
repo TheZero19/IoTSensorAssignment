@@ -3,40 +3,70 @@
 import (
 	"database/sql"
 	Config "dependencies/Constants"
+	"fmt"
+	"log"
+
+	_ "github.com/lib/pq"
+	"github.com/redis/go-redis/v9"
 )
 
 func DbInit() {
-	var dbErr error
-	Config.Db, dbErr = sql.Open("sqlite3", "./data.Db")
-	if dbErr != nil {
-		panic(dbErr)
+	isPostgresInit := postgresInit()
+	isRedisInit := redisInit()
+
+	if isPostgresInit {
+		onPostgresInit()
 	}
 
+	if isRedisInit {
+		onRedisInit()
+	}
+}
+
+func postgresInit() bool {
+	var dbErr error
+	dsn := "postgres://iotuser:secret@localhost:5432/iotdb?sslmode=disable"
+
+	Config.PostgresDb, dbErr = sql.Open("postgres", dsn)
+	if dbErr != nil {
+		panic(dbErr)
+		log.Fatal("Failed to connect to database: %v", dbErr)
+		Config.PostgresDb.Close()
+		return false
+	}
+
+	return true
+}
+func onPostgresInit() {
 	//Create Sensors table if not exists
 	sensorsTableCreationQuery := `CREATE TABLE IF NOT EXISTS sensors (
-    	ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    	ID SERIAL PRIMARY KEY,
     	SensorID Text NOT NULL UNIQUE,
-		PSKHash TEXT NOT NULL
+		PSKHash TEXT NOT NULL,
+		AverageTemperature FLOAT NOT NULL DEFAULT 0.0,
+		NumberOfReceivedReadings INTEGER NOT NULL DEFAULT 0
 	)`
 
-	_, dbErr = Config.Db.Exec(sensorsTableCreationQuery)
+	_, dbErr := Config.PostgresDb.Exec(sensorsTableCreationQuery)
 	if dbErr != nil {
-		panic(dbErr)
+		fmt.Println("Error creating sensors table: %v", dbErr)
+	}
+}
+
+func redisInit() bool {
+	redisAddr := "localhost:6379"
+	Config.RedisDb = redis.NewClient(&redis.Options{
+		Addr: redisAddr,
+	})
+	if _, err := Config.RedisDb.Ping(Config.Ctx).Result(); err != nil {
+		panic(err)
+		return false
 	}
 
-	//Create Readings table if not exists
-	readingsTableCreationQuery := `CREATE TABLE IF NOT EXISTS readings
-    (
-		ID INTEGER PRIMARY KEY AUTOINCREMENT, 
-		SensorID TEXT NOT NULL UNIQUE, 
-		AverageValue FLOAT, 
-		TotalNumberOfEntries INTEGER, 
-		LastReadingTimestamp DATETIME DEFAULT CURRENT_TIMESTAMP, 
-		FOREIGN KEY (SensorID) REFERENCES Sensors(SensorID)
-    )`
+	fmt.Println("Successfully connected to Redis")
+	return true
+}
 
-	_, dbErr = Config.Db.Exec(readingsTableCreationQuery)
-	if dbErr != nil {
-		panic(dbErr)
-	}
+func onRedisInit() {
+	//Add instructions here to execute when redis is initialized
 }
