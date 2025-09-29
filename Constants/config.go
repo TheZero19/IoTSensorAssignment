@@ -21,3 +21,28 @@ const DIRTY_SENSORS_KEY = "dirty_sensors"
 const PSK_HASH = "PSKHash"
 const AVERAGE_TEMPERATURE = "AverageTemperature"
 const NUMBER_OF_RECEIVED_READINGS = "NumberOfReceivedReadings"
+
+// Environment Variables Names
+const POSTGRES_USER = "POSTGRES_USER"
+const POSTGRES_PASSWORD = "POSTGRES_PASSWORD"
+const POSTGRES_DB = "POSTGRES_DB"
+const POSTGRES_HOST = "POSTGRES_HOST"
+const POSTGRES_PORT = "POSTGRES_PORT"
+const REDIS_HOST = "REDIS_HOST"
+const REDIS_PORT = "REDIS_PORT"
+
+const SYNC_FACTOR = "SYNC_FACTOR"
+
+// Environment variables
+type EnvironmentVariables struct {
+	PostgresUser       string
+	PostgresPassword   string
+	PostgresDB         string
+	PostgresHost       string
+	PostgresPort       string
+	RedisHost          string
+	RedisPort          string
+	DatabaseSyncFactor int
+}
+
+var Env EnvironmentVariables

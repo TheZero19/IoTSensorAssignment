@@ -3,6 +3,7 @@
 import (
 	"dependencies/Auth"
 	AuthConcrete "dependencies/Auth/Concrete"
+	Config "dependencies/Constants"
 	"dependencies/Database/Synchronization"
 	"fmt"
 	"net/http"
@@ -16,7 +17,12 @@ import (
 )
 
 func init() {
+	environmentVarInit()
 	Database.DbInit()
+}
+
+func serverInitCheck(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("IOT Assignment Server Up and Running"))
 }
 
 func main() {
@@ -26,10 +32,11 @@ func main() {
 	sensorRegistrationMiddleware := Auth.NewAuthenticate(sensorRegistrationAuth)
 	sensorInputMiddleware := Auth.NewAuthenticate(sensorInputAuth)
 
+	http.Handle("/", http.HandlerFunc(serverInitCheck))
 	http.Handle("/registerSensor", sensorRegistrationMiddleware.AuthMiddleware.Authenticate(http.HandlerFunc(Register.RegisterSensor)))
 	http.Handle("/inputPayloadFromSensor", sensorInputMiddleware.AuthMiddleware.Authenticate(http.HandlerFunc(Sensor.ReceivePayloadFromSensor)))
 
-	Synchronization.StartBackgroundSync(5 * time.Second)
+	Synchronization.StartBackgroundSync(time.Duration(Config.Env.DatabaseSyncFactor) * time.Second)
 
 	fmt.Println("Listening on port 8080..")
 	err := http.ListenAndServe(":8080", nil)

@@ -25,12 +25,18 @@ func DbInit() {
 
 func postgresInit() bool {
 	var dbErr error
-	dsn := "postgres://iotuser:secret@localhost:5432/iotdb?sslmode=disable"
+
+	dsn := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",
+		Config.Env.PostgresUser,
+		Config.Env.PostgresPassword,
+		Config.Env.PostgresHost,
+		Config.Env.PostgresPort,
+		Config.Env.PostgresDB)
 
 	Config.PostgresDb, dbErr = sql.Open("postgres", dsn)
 	if dbErr != nil {
 		panic(dbErr)
-		log.Fatal("Failed to connect to database: %v", dbErr)
+		log.Println("Failed to connect to database: %v", dbErr)
 		Config.PostgresDb.Close()
 		return false
 	}
@@ -54,7 +60,7 @@ func onPostgresInit() {
 }
 
 func redisInit() bool {
-	redisAddr := "localhost:6379"
+	redisAddr := fmt.Sprintf("%s:%s", Config.Env.RedisHost, Config.Env.RedisPort)
 	Config.RedisDb = redis.NewClient(&redis.Options{
 		Addr: redisAddr,
 	})
