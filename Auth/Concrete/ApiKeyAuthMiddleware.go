@@ -11,8 +11,7 @@ type ApiKeyAuthMiddleware struct{}
 
 func (a ApiKeyAuthMiddleware) Authenticate(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		const API_KEY string = "CEROSKY"
-		apiKey := API_KEY
+		apiKey := Config.Env.SensorRegistrationAPIKey
 		if apiKey == "" {
 			http.Error(w, "Server not configured: missing API key", http.StatusInternalServerError)
 			fmt.Println("Server not configured: missing API key")

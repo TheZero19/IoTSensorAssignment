@@ -30,19 +30,21 @@ const POSTGRES_HOST = "POSTGRES_HOST"
 const POSTGRES_PORT = "POSTGRES_PORT"
 const REDIS_HOST = "REDIS_HOST"
 const REDIS_PORT = "REDIS_PORT"
+const SENSOR_REGISTRATION_API_KEY = "SENSOR_REGISTRATION_API_KEY"
 
 const SYNC_FACTOR = "SYNC_FACTOR"
 
 // Environment variables
 type EnvironmentVariables struct {
-	PostgresUser       string
-	PostgresPassword   string
-	PostgresDB         string
-	PostgresHost       string
-	PostgresPort       string
-	RedisHost          string
-	RedisPort          string
-	DatabaseSyncFactor int
+	PostgresUser             string
+	PostgresPassword         string
+	PostgresDB               string
+	PostgresHost             string
+	PostgresPort             string
+	RedisHost                string
+	RedisPort                string
+	DatabaseSyncFactor       int
+	SensorRegistrationAPIKey string
 }
 
 var Env EnvironmentVariables

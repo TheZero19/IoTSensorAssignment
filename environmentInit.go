@@ -15,6 +15,7 @@ func environmentVarInit() {
 	Config.Env.PostgresPort = os.Getenv(Config.POSTGRES_PORT)
 	Config.Env.RedisHost = os.Getenv(Config.REDIS_HOST)
 	Config.Env.RedisPort = os.Getenv(Config.REDIS_PORT)
+	Config.Env.SensorRegistrationAPIKey = os.Getenv(Config.SENSOR_REGISTRATION_API_KEY)
 
 	//For sync factor
 	syncFactor := os.Getenv(Config.SYNC_FACTOR)
