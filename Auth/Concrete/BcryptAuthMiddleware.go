@@ -82,13 +82,13 @@ func isSensorRegistered(psk string, sensorID string) bool {
 		fmt.Println("Authorized: valid psk")
 		if !isUserCachedInRedis {
 			//Store this cache in redis for future endpoint invocations by the same sensor
-			Register.RegisterSensorToRedisIfNotInCache(sensorEntry.SensorID, sensorEntry.PSKHash,
+			Register.RegisterSensorToRedis(sensorEntry.SensorID, sensorEntry.PSKHash,
 				strconv.FormatFloat(sensorEntry.AverageTemperature, 'f', -1, 64),
 				strconv.Itoa(sensorEntry.NumberOfReceivedReadings))
 		}
 		return true
 	} else {
-		fmt.Println("Authorized: no matching PSK")
+		fmt.Println("Unauthorized: no matching PSK")
 		return false
 	}
 }

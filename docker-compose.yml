@@ -19,7 +19,7 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       SENSOR_REGISTRATION_API_KEY: CEROSKY
-      SYNC_FACTOR: 10
+      SYNC_FACTOR: 600
       
   postgres:
     image: postgres:15

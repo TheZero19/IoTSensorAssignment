@@ -28,10 +28,10 @@ func RegisterSensor(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	RegisterSensorToRedisIfNotInCache(sensorID, hashedPSK, "0", "0")
+	RegisterSensorToRedis(sensorID, hashedPSK, "0", "0")
 }
 
-func RegisterSensorToRedisIfNotInCache(sensorID string, hashedPSK string, averageTemperature string, numberOfReceivedReadings string) {
+func RegisterSensorToRedis(sensorID string, hashedPSK string, averageTemperature string, numberOfReceivedReadings string) {
 	key := sensorID
 	added, err := Config.RedisDb.HSet(Config.Ctx, key, map[string]string{
 		Config.PSK_HASH:                    hashedPSK,

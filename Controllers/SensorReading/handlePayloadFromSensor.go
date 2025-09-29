@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func ReceivePayloadFromSensor(w http.ResponseWriter, r *http.Request) {
@@ -16,13 +17,20 @@ func ReceivePayloadFromSensor(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sensorReading, err := Utils.GetSensorReadingFromJsonString(r.Body)
+	authHeader := r.Header.Get(Config.AUTH_HEADER_KEY)
+	parts := strings.SplitN(authHeader, Config.AUTH_HEADER_VALUE_SEPARATOR, 3)
+
+	// If in json, the sensorID of another sensor is sent accidentally, we use the sensorID from Header instead
+	sensorID := parts[1]
+
+	fmt.Println("Received payload from: ", sensorID)
 	if err != nil {
 		fmt.Println("Error during serialization: ", err)
 		return
 	}
 
 	//Fetch the sensor data to evaluate the average value
-	vals, fetchErr := Config.RedisDb.HMGet(Config.Ctx, sensorReading.SensorID, Config.AVERAGE_TEMPERATURE, Config.NUMBER_OF_RECEIVED_READINGS).Result()
+	vals, fetchErr := Config.RedisDb.HMGet(Config.Ctx, sensorID, Config.AVERAGE_TEMPERATURE, Config.NUMBER_OF_RECEIVED_READINGS).Result()
 
 	if fetchErr != nil {
 		fmt.Println("Error occurred while trying to fetch field values of Sensor from redis", fetchErr)
@@ -35,7 +43,7 @@ func ReceivePayloadFromSensor(w http.ResponseWriter, r *http.Request) {
 	temperatureReading, _ := strconv.ParseFloat(sensorReading.Temperature, 64)
 	newAvgTemperature := ((avgTemperature * float64(totalNumOfReadings)) + temperatureReading) / float64(totalNumOfReadings+1)
 
-	updateSensorDataWithNewReadingToRedisCache(sensorReading.SensorID,
+	updateSensorDataWithNewReadingToRedisCache(sensorID,
 		strconv.FormatFloat(newAvgTemperature, 'f', -1, 64), strconv.Itoa(totalNumOfReadings+1))
 
 	sendTemperatureResponseToTheClient(w)
