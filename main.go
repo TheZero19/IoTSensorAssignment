@@ -2,10 +2,11 @@
 
 import (
 	"dependencies/Auth"
+	AuthConcrete "dependencies/Auth/Concrete"
+	"dependencies/Database/Synchronization"
 	"fmt"
 	"net/http"
-
-	AuthConcrete "dependencies/Auth/Concrete"
+	"time"
 
 	_ "golang.org/x/crypto/bcrypt"
 
@@ -27,6 +28,8 @@ func main() {
 
 	http.Handle("/registerSensor", sensorRegistrationMiddleware.AuthMiddleware.Authenticate(http.HandlerFunc(Register.RegisterSensor)))
 	http.Handle("/inputPayloadFromSensor", sensorInputMiddleware.AuthMiddleware.Authenticate(http.HandlerFunc(Sensor.ReceivePayloadFromSensor)))
+
+	Synchronization.StartBackgroundSync(5 * time.Second)
 
 	fmt.Println("Listening on port 8080..")
 	err := http.ListenAndServe(":8080", nil)

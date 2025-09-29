@@ -10,8 +10,13 @@ type SensorReading struct {
 	Temperature string `json:"temperature"`
 }
 
-func GetSensorReading(rBody io.Reader) (SensorReading, error) {
+func GetSensorReadingFromJsonString(rBody io.Reader) (SensorReading, error) {
 	var sensorReading SensorReading
 	err := json.NewDecoder(rBody).Decode(&sensorReading)
 	return sensorReading, err
+}
+
+type SensorResponse struct {
+	OverallAverage float64            `json:"overall_average"`
+	SensorAverages map[string]float64 `json:"sensor_averages"`
 }

@@ -41,10 +41,10 @@ func onPostgresInit() {
 	//Create Sensors table if not exists
 	sensorsTableCreationQuery := `CREATE TABLE IF NOT EXISTS sensors (
     	ID SERIAL PRIMARY KEY,
-    	SensorID Text NOT NULL UNIQUE,
-		PSKHash TEXT NOT NULL,
-		AverageTemperature FLOAT NOT NULL DEFAULT 0.0,
-		NumberOfReceivedReadings INTEGER NOT NULL DEFAULT 0
+    	sensor_id Text NOT NULL UNIQUE,
+		psk_hash TEXT NOT NULL,
+		average_temperature FLOAT NOT NULL DEFAULT 0.0,
+		num_of_received_readings INTEGER NOT NULL DEFAULT 0
 	)`
 
 	_, dbErr := Config.PostgresDb.Exec(sensorsTableCreationQuery)
