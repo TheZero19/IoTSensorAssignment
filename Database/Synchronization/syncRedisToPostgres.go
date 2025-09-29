@@ -21,6 +21,8 @@ func syncDirtySensors() {
 		return
 	}
 
+	fmt.Println("Sensors to be synchronized. Count: ", len(sensorIDs))
+
 	for _, sensorID := range sensorIDs {
 		vals, err := Config.RedisDb.HMGet(
 			Config.Ctx,
