@@ -33,6 +33,8 @@ func postgresInit() bool {
 		Config.Env.PostgresPort,
 		Config.Env.PostgresDB)
 
+	fmt.Println(dsn)
+
 	Config.PostgresDb, dbErr = sql.Open("postgres", dsn)
 	if dbErr != nil {
 		panic(dbErr)
