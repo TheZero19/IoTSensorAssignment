@@ -1,6 +1,4 @@
 .idea/
-go.mod
-go.sum
 data.db
 data.db-journal
 .env
